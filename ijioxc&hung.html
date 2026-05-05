@@ -1,4 +1,4 @@
-<index.html>
+<index html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -237,6 +237,25 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSyst
 .toast.ok::before{content:'✓  ';color:var(--dn);}
 .toast.err::before{content:'✕  ';color:var(--up);}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* DARK MODE */
+[data-theme="dark"]{
+  --bg:#000;--card:#1c1c1e;--sec:#1c1c1e;--ter:#2c2c2e;
+  --border:rgba(255,255,255,.1);--border-h:rgba(255,255,255,.18);
+  --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;
+  --up-d:rgba(255,59,48,.12);--dn-d:rgba(48,209,88,.12);
+  --sh:0 1px 4px rgba(0,0,0,.4),0 0 0 .5px rgba(255,255,255,.06);
+  --sh-md:0 2px 12px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.3);
+  --sh-lg:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .nav{background:rgba(28,28,30,.88);}
+[data-theme="dark"] .stock-bar{background:rgba(28,28,30,.75);}
+[data-theme="dark"] .ai-hdr{background:rgba(28,28,30,.75);}
+[data-theme="dark"] .modal{background:rgba(44,44,46,.97);}
+[data-theme="dark"] .ibtn .tip{background:rgba(245,245,247,.92);color:#1d1d1f;}
+
+/* SETTINGS BTN SMALL */
+.ibtn-txt{width:auto;padding:0 12px;font-size:11px;font-weight:700;gap:5px;letter-spacing:.2px;}
 </style>
 </head>
 <body>
@@ -256,6 +275,8 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSyst
     <button class="ibtn" id="btn-ref"><svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg><span class="tip">刷新</span></button>
     <button class="ibtn" id="btn-add-nav"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="tip">新增股票</span></button>
     <button class="ibtn" id="btn-bb"><svg viewBox="0 0 24 24"><path d="M3 12h18M3 6s3 2.5 9 2.5S21 6 21 6M3 18s3-2.5 9-2.5 9 2.5 9 2.5"/></svg><span class="tip">布林通道</span></button>
+    <button class="ibtn" id="btn-theme"><svg id="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="tip">夜間模式</span></button>
+    <button class="ibtn ibtn-txt" id="btn-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>API Key<span class="tip">設定 Claude API Key</span></button>
   </div>
 </nav>
 
@@ -386,7 +407,19 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSyst
     <div class="modal-row"><button class="btn-c" id="tm-cancel">取消</button><button class="btn-ok" id="tm-ok">確認</button></div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="modal-ov" id="settings-modal">
+  <div class="modal">
+    <h3>⚙️ 設定</h3>
+    <p><strong>Proxy URL</strong>（必填，用於取得股票數據）<br>部署 Cloudflare Worker 後填入，詳見說明文件。</p>
+    <input id="proxy-inp" type="text" placeholder="https://your-worker.workers.dev" autocomplete="off" spellcheck="false"/>
+    <p style="margin-top:-4px"><strong>Anthropic API Key</strong>（選填，啟用 Claude AI 分析）</p>
+    <input id="api-key-inp" type="password" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+    <div class="modal-row">
+      <button class="btn-c" id="settings-cancel">取消</button>
+      <button class="btn-ok" id="settings-ok">儲存</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const ST={
@@ -408,8 +441,15 @@ function toast(msg,type=''){const e=$('toast');e.textContent=msg;e.className='to
 function save(){localStorage.setItem('sf3_stocks',JSON.stringify(ST.stocks));localStorage.setItem('sf3_themes',JSON.stringify(ST.themes));}
 function toY(s){s=s.trim().toUpperCase();if(/^\d{4,5}$/.test(s))return s.length===4?s+'.TW':s+'.TWO';return s;}
 function disp(s){return s.replace(/\.(TW|TWO)$/,'');}
-const PX='https://corsproxy.io/?';
-async function fetchYF(sym,ivl,rng){const u=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${ivl}&range=${rng}&includePrePost=false`;const r=await fetch(PX+encodeURIComponent(u));if(!r.ok)throw new Error('fetch');return r.json();}
+function getProxy(){return localStorage.getItem('sf_proxy')||'';}
+function getKey(){return localStorage.getItem('sf_apikey')||'';}
+async function fetchYF(sym,ivl,rng){
+  const u=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${ivl}&range=${rng}&includePrePost=false`;
+  const px=getProxy();
+  if(px){try{const r=await fetch(`${px.replace(/\/$/,'')}?url=${encodeURIComponent(u)}`,{signal:AbortSignal.timeout(10000)});if(r.ok)return r.json();}catch(e){throw new Error('Proxy 失敗，請確認 Worker URL');}}
+  for(const fb of['https://corsproxy.io/?','https://api.allorigins.win/raw?url=']){try{const r=await fetch(fb+encodeURIComponent(u),{signal:AbortSignal.timeout(8000)});if(r.ok)return r.json();}catch(e){}}
+  throw new Error('請在設定中填入 Cloudflare Worker Proxy URL');
+}
 async function loadSD(raw,ivl='1d'){const sym=toY(raw),rng=ivl==='15m'?'5d':'6mo';const d=await fetchYF(sym,ivl,rng);const res=d?.chart?.result?.[0];if(!res)throw new Error('no data');const ts=res.timestamp,q=res.indicators.quote[0];const candles=ts.map((t,i)=>({time:ivl==='15m'?t:Math.floor(t),open:q.open[i],high:q.high[i],low:q.low[i],close:q.close[i],volume:q.volume[i]})).filter(c=>c.open&&c.close);return{candles,meta:res.meta};}
 function ema(a,p){const k=2/(p+1);let e=null;return a.map(v=>{if(!v)return null;if(e===null){e=v;return e;}e=v*k+e*(1-k);return e;});}
 function sma(a,p){return a.map((_,i)=>i<p-1?null:a.slice(i-p+1,i+1).reduce((s,b)=>s+b,0)/p);}
@@ -455,9 +495,9 @@ function initCharts(){
   iC=LightweightCharts.createChart($('ind-chart'),CO({ts:{visible:false}}));
   vC.priceScale('right').applyOptions({visible:false});iC.priceScale('right').applyOptions({scaleMargins:{top:.1,bottom:.1}});
   cS=mC.addCandlestickSeries({upColor:'#ff3b30',downColor:'#30d158',borderUpColor:'#ff3b30',borderDownColor:'#30d158',wickUpColor:'#ff3b30',wickDownColor:'#30d158'});
-  bbU=mC.addLineSeries({color:'rgba(0,0,0,.18)',lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false});
-  bbM=mC.addLineSeries({color:'rgba(0,0,0,.1)',lineWidth:1,priceLineVisible:false,lastValueVisible:false});
-  bbL=mC.addLineSeries({color:'rgba(0,0,0,.18)',lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false});
+  bbU=mC.addLineSeries({color:'rgba(0,0,0,.45)',lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false});
+  bbM=mC.addLineSeries({color:'rgba(0,0,0,.25)',lineWidth:1,priceLineVisible:false,lastValueVisible:false});
+  bbL=mC.addLineSeries({color:'rgba(0,0,0,.45)',lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false});
   vS=vC.addHistogramSeries({priceScaleId:'v'});vC.priceScale('v').applyOptions({scaleMargins:{top:0,bottom:0}});
   mC.subscribeCrosshairMove(p=>{if(!p.time)return;const c=p.seriesData.get(cS);if(c){$('oo').textContent=fmt(c.open);$('oh').textContent=fmt(c.high);$('ol').textContent=fmt(c.low);$('oc').textContent=fmt(c.close);}const vc=p.seriesData.get(vS);if(vc)$('ov').textContent=fmtV(vc.value);});
   buildInd('macd');
@@ -526,15 +566,65 @@ function renderThemes(){
   list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ST.themes.splice(+b.dataset.del,1);save();renderThemes();}));
 }
 function openTM(idx=-1){ST.editThemeIdx=idx;$('tm-title').textContent=idx>=0?'編輯題材':'新增題材';if(idx>=0){const t=ST.themes[idx];$('tm-name').value=t.name;$('tm-desc').value=t.desc;$('tm-str').value=t.str;}else{['tm-name','tm-desc','tm-str'].forEach(id=>$(id).value='');}$('theme-modal').classList.add('open');setTimeout(()=>$('tm-name').focus(),80);}
+function getKey(){return localStorage.getItem('sf_apikey')||'';}
+function localAnalysis(sigs,score,entry,sl,tp){
+  const on=Object.entries(sigs).filter(([,v])=>v.on).map(([k])=>({trend:'均線多排',kd:'KD超賣回彈',macd:'MACD金叉',vol:'量能放大',bb:'布林反彈',rsi:'RSI超賣回升'}[k]));
+  const lvl=score>=5?'強烈多頭':score>=3?'中性觀察':'信號不足';
+  let t=`①信號判讀：共振 ${score}/6（${lvl}）。${on.length?'觸發：'+on.join('、')+'。':''}`;
+  t+=`\n②操作建議：${score>=5?`技術面多頭，可考慮於 ${fmt(entry)} 附近進場，分批建倉。`:score>=3?'建議等待更明確突破訊號後再進場，勿追高。':'當前信號不足，建議觀望。'}`;
+  t+=`\n③主要風險：止損 ${fmt(sl)}（-${fmt(((entry-sl)/entry)*100,1)}%），止盈 ${fmt(tp)}（+${fmt(((tp-entry)/entry)*100,1)}%），風報比約 1:2。`;
+  return t;
+}
 async function runAI(){
   if(!ST.chartData){toast('請先載入股票','err');return;}
-  const btn=$('ai-btn'),out=$('ai-out');btn.disabled=true;btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 分析中…';out.textContent='Claude 正在分析技術指標…';
+  const btn=$('ai-btn'),out=$('ai-out');
+  btn.disabled=true;btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 分析中…';
+  out.textContent='分析中…';
   const{sigs,score,entry,sl,tp}=ST.chartData.sigData;
-  const sigTxt=Object.entries(sigs).map(([k,v])=>`${v.on?'✅':'❌'} ${{trend:'均線多排',kd:'KD超賣',macd:'MACD轉多',vol:'量能放大',bb:'布林反彈',rsi:'RSI超賣'}[k]} (${v.val})`).join('\n');
-  const prompt=`你是台股技術分析師，根據以下數據給出簡短交易建議（繁體中文，120字內）：\n股票：${disp(ST.active)}｜現價：${fmt(entry)}｜共振分數：${score}/6\n${sigTxt}\n進場：${fmt(entry)}｜止盈：${fmt(tp)}（+${fmt(((tp-entry)/entry)*100,1)}%）｜止損：${fmt(sl)}（-${fmt(((entry-sl)/entry)*100,1)}%）\n格式：①信號判讀 ②操作建議 ③主要風險`;
-  try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});const d=await r.json();out.textContent=d.content?.[0]?.text||'分析失敗，請重試';}catch(e){out.textContent='⚠️ 無法連線 AI，請稍後再試';}
+  const key=getKey();
+  if(!key){
+    await new Promise(r=>setTimeout(r,400));
+    out.textContent=localAnalysis(sigs,score,entry,sl,tp);
+    out.textContent+=' ｜ 本地模式（設定 API Key 可啟用 Claude AI）';
+  }else{
+    const sigTxt=Object.entries(sigs).map(([k,v])=>`${v.on?'✅':'❌'} ${{trend:'均線多排',kd:'KD超賣',macd:'MACD轉多',vol:'量能放大',bb:'布林反彈',rsi:'RSI超賣'}[k]} (${v.val})`).join('\n');
+    const prompt=`你是台股技術分析師，根據以下數據給出簡短交易建議（繁體中文，120字內）：\n股票：${disp(ST.active)}｜現價：${fmt(entry)}｜共振分數：${score}/6\n${sigTxt}\n進場：${fmt(entry)}｜止盈：${fmt(tp)}｜止損：${fmt(sl)}\n格式：①信號判讀 ②操作建議 ③主要風險`;
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+      if(!r.ok)throw new Error(r.status);
+      const d=await r.json();out.textContent=d.content?.[0]?.text||'分析失敗';
+    }catch(e){
+      out.textContent=localAnalysis(sigs,score,entry,sl,tp);
+      out.textContent+=' ｜ Claude 連線失敗，已切換本地模式';
+    }
+  }
   btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> AI 分析當前行情';
 }
+// Theme
+function applyTheme(dark){
+  document.documentElement.dataset.theme=dark?'dark':'';
+  const bg=dark?'#1c1c1e':'#ffffff',tc=dark?'#636366':'#aeaeb2',gr=dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)';
+  const bbColor=dark?'rgba(255,255,255,.45)':'rgba(0,0,0,.45)',bbMid=dark?'rgba(255,255,255,.25)':'rgba(0,0,0,.25)';
+  [mC,vC,iC].forEach(c=>c?.applyOptions({layout:{background:{type:'solid',color:bg},textColor:tc},grid:{vertLines:{color:gr},horzLines:{color:gr}}}));
+  bbU?.applyOptions({color:bbColor});bbM?.applyOptions({color:bbMid});bbL?.applyOptions({color:bbColor});
+  $('btn-theme').classList.toggle('on',dark);
+  $('theme-icon').innerHTML=dark?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+$('btn-theme').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';localStorage.setItem('sf_theme',dark?'dark':'');applyTheme(dark);});
+
+// Settings
+const openSettings=()=>{$('proxy-inp').value=getProxy();$('api-key-inp').value=getKey();$('settings-modal').classList.add('open');setTimeout(()=>$('proxy-inp').focus(),80);};
+$('btn-settings').addEventListener('click',openSettings);
+$('settings-cancel').addEventListener('click',()=>$('settings-modal').classList.remove('open'));
+$('settings-ok').addEventListener('click',()=>{
+  const px=$('proxy-inp').value.trim(),k=$('api-key-inp').value.trim();
+  localStorage.setItem('sf_proxy',px);localStorage.setItem('sf_apikey',k);
+  $('settings-modal').classList.remove('open');
+  toast('設定已儲存','ok');
+  if(px&&ST.active)loadStock(ST.active);
+});
+$('api-key-inp').addEventListener('keydown',e=>{if(e.key==='Enter')$('settings-ok').click();if(e.key==='Escape')$('settings-modal').classList.remove('open');});
+$('settings-modal').addEventListener('click',e=>{if(e.target===$('settings-modal'))$('settings-modal').classList.remove('open');});
 setInterval(()=>{if(ST.active)loadStock(ST.active);},60000);
 const openAdd=()=>{$('add-modal').classList.add('open');setTimeout(()=>$('add-inp').focus(),80);};
 const closeAdd=()=>{$('add-modal').classList.remove('open');$('add-inp').value='';};
@@ -553,7 +643,13 @@ $('tm-cancel').addEventListener('click',()=>$('theme-modal').classList.remove('o
 $('tm-ok').addEventListener('click',()=>{const name=$('tm-name').value.trim(),desc=$('tm-desc').value.trim(),str=$('tm-str').value.trim()||'盤整';if(!name)return;const t={name,desc,str};if(ST.editThemeIdx>=0)ST.themes[ST.editThemeIdx]=t;else ST.themes.push(t);save();renderThemes();$('theme-modal').classList.remove('open');});
 ['tm-name','tm-desc','tm-str'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')$('tm-ok').click();if(e.key==='Escape')$('theme-modal').classList.remove('open');}));
 $('theme-modal').addEventListener('click',e=>{if(e.target===$('theme-modal'))$('theme-modal').classList.remove('open');});
-function init(){initCharts();renderBar();renderThemes();$('btn-bb').classList.add('on');if(ST.stocks.length){ST.active=ST.stocks[0];loadStock(ST.active);renderBar();}}
+function init(){
+  initCharts();renderBar();renderThemes();
+  $('btn-bb').classList.add('on');
+  const savedTheme=localStorage.getItem('sf_theme');
+  if(savedTheme==='dark')applyTheme(true);
+  if(ST.stocks.length){ST.active=ST.stocks[0];loadStock(ST.active);renderBar();}
+}
 if(typeof LightweightCharts!=='undefined')init();else window.addEventListener('load',init);
 </script>
 </body>
