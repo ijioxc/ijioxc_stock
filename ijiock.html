@@ -3,39 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BandLab — 布林通道實驗室</title>
+<title>BandLab — 哥布林通道</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#f0f0f5;
-  --surface:#ffffff;
-  --surface-2:#f7f7fa;
-  --surface-3:#ededf2;
-  --border:rgba(0,0,0,0.07);
-  --border-md:rgba(0,0,0,0.12);
-  --text:#18181b;
-  --text-2:#52525b;
-  --text-3:#a1a1aa;
-  --up:#ef4444;
-  --up-soft:rgba(239,68,68,0.09);
-  --dn:#22c55e;
-  --dn-soft:rgba(34,197,94,0.09);
-  --warn:#f59e0b;
-  --warn-soft:rgba(245,158,11,0.1);
-  --accent:#6366f1;
-  --accent-soft:rgba(99,102,241,0.1);
-  --bb-upper:#f97316;
-  --bb-mid:#6366f1;
-  --bb-lower:#06b6d4;
-  --bb-fill:rgba(99,102,241,0.04);
+  /* ── Old Money · Warm Cognac (default) ── */
+  --bg:#f0ebe1;
+  --surface:#fdfaf5;
+  --surface-2:#f5f0e7;
+  --surface-3:#eae3d6;
+  --border:rgba(100,65,30,0.09);
+  --border-md:rgba(100,65,30,0.17);
+  --text:#2a1a0a;
+  --text-2:#6b4a30;
+  --text-3:#a08570;
+  --up:#b91c1c;
+  --up-soft:rgba(185,28,28,0.09);
+  --dn:#166534;
+  --dn-soft:rgba(22,101,52,0.09);
+  --warn:#92400e;
+  --warn-soft:rgba(146,64,14,0.10);
+  --accent:#9b5e25;
+  --accent-2:#c9a96e;
+  --accent-soft:rgba(155,94,37,0.11);
+  --bb-upper:#b91c1c;
+  --bb-mid:#9b5e25;
+  --bb-lower:#1d4ed8;
+  --bb-fill:rgba(155,94,37,0.04);
   --r:14px;--r-sm:10px;--r-xs:6px;
-  --sh:0 1px 3px rgba(0,0,0,0.05),0 0 0 1px rgba(0,0,0,0.04);
-  --sh-md:0 4px 16px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
-  --sh-lg:0 12px 40px rgba(0,0,0,0.12),0 2px 8px rgba(0,0,0,0.06);
+  --sh:0 1px 3px rgba(60,30,10,0.06),0 0 0 1px rgba(60,30,10,0.05);
+  --sh-md:0 4px 16px rgba(60,30,10,0.10),0 1px 4px rgba(60,30,10,0.06);
+  --sh-lg:0 12px 40px rgba(60,30,10,0.14),0 2px 8px rgba(60,30,10,0.08);
   --nav-h:52px;
+  --sb-w:196px; /* sidebar width */
 }
+/* ── Accent presets (apply via JS on <html>) ── */
+[data-accent="forest"]{--accent:#1a5c3a;--accent-2:#4caf7d;--accent-soft:rgba(26,92,58,0.11);--bb-mid:#1a5c3a;}
+[data-accent="navy"]  {--accent:#1e3a6b;--accent-2:#6b8fcf;--accent-soft:rgba(30,58,107,0.11);--bb-mid:#1e3a6b;}
+[data-accent="burg"]  {--accent:#722f37;--accent-2:#c47b84;--accent-soft:rgba(114,47,55,0.11);--bb-mid:#722f37;}
 html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:4px;}
@@ -57,9 +64,9 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
 .logo{display:flex;align-items:center;gap:9px;margin-right:20px;user-select:none;flex-shrink:0;}
 .logo-mark{
   width:28px;height:28px;border-radius:8px;
-  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(99,102,241,0.35);
+  box-shadow:0 2px 8px rgba(155,94,37,0.35);
 }
 .logo-mark svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 .logo-txt{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.4px;}
@@ -79,6 +86,7 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
 }
 .ibtn:hover{background:var(--surface-3);color:var(--text);transform:translateY(-1px);box-shadow:var(--sh-md);}
 .ibtn.active{background:var(--accent-soft);color:var(--accent);}
+
 .ibtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .tip-wrap{position:relative;}
 .tip-wrap .tip{
@@ -346,37 +354,188 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
 .toast.err::before{content:'✕  ';color:var(--up);}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ─── DARK MODE ─── */
+/* ─── DARK MODE (Old Money Dark) ─── */
 [data-theme="dark"]{
-  --bg:#09090b;
-  --surface:#18181b;
-  --surface-2:#1f1f23;
-  --surface-3:#27272a;
-  --border:rgba(255,255,255,.07);
-  --border-md:rgba(255,255,255,.14);
-  --text:#fafafa;
-  --text-2:#a1a1aa;
-  --text-3:#52525b;
-  --up-soft:rgba(239,68,68,.14);
-  --dn-soft:rgba(34,197,94,.13);
-  --accent-soft:rgba(99,102,241,.15);
-  --sh:0 1px 3px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.05);
-  --sh-md:0 4px 16px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.3);
-  --sh-lg:0 12px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4);
+  --bg:#110e09;
+  --surface:#1e1910;
+  --surface-2:#272015;
+  --surface-3:#342b1e;
+  --border:rgba(210,180,140,.08);
+  --border-md:rgba(210,180,140,.16);
+  --text:#f0e6d3;
+  --text-2:#c4a882;
+  --text-3:#7a6548;
+  --up:#e05252;
+  --up-soft:rgba(224,82,82,.13);
+  --dn:#3aac6e;
+  --dn-soft:rgba(58,172,110,.12);
+  --warn:#d4a850;
+  --warn-soft:rgba(212,168,80,.12);
+  --accent:#d4a850;
+  --accent-2:#e8c98a;
+  --accent-soft:rgba(212,168,80,.14);
+  --sh:0 1px 3px rgba(0,0,0,.5),0 0 0 1px rgba(210,180,140,.05);
+  --sh-md:0 4px 16px rgba(0,0,0,.6),0 1px 4px rgba(0,0,0,.4);
+  --sh-lg:0 12px 40px rgba(0,0,0,.75),0 2px 8px rgba(0,0,0,.5);
 }
-[data-theme="dark"] .nav{background:rgba(24,24,27,.9);}
-[data-theme="dark"] .stock-bar{background:rgba(24,24,27,.8);}
-[data-theme="dark"] .modal{background:rgba(24,24,27,.98);border-color:rgba(255,255,255,.08);}
+[data-theme="dark"] .nav{background:rgba(30,25,16,.92);}
+[data-theme="dark"] .ticker-strip{background:rgba(30,25,16,.88);}
+[data-theme="dark"] .left-sidebar{background:var(--surface);}
+[data-theme="dark"] .modal{background:rgba(30,25,16,.98);border-color:rgba(210,180,140,.10);}
+
+/* ─── TICKER MARQUEE ─── */
+.ticker-strip{
+  display:flex;align-items:center;height:32px;
+  background:rgba(253,250,245,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;z-index:100;
+}
+.ticker-label{
+  font-size:8px;font-weight:800;letter-spacing:.8px;color:var(--accent);
+  padding:0 10px;white-space:nowrap;flex-shrink:0;border-right:1px solid var(--border);
+  text-transform:uppercase;display:flex;align-items:center;gap:4px;height:100%;
+}
+.ticker-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 2s infinite;}
+.ticker-viewport{flex:1;overflow:hidden;position:relative;}
+.ticker-track{
+  display:flex;align-items:center;white-space:nowrap;
+  animation:ticker-scroll 40s linear infinite;
+  width:max-content;
+}
+.ticker-strip:hover .ticker-track{animation-play-state:paused;}
+@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:0 16px;cursor:pointer;transition:background .15s;height:32px;
+}
+.ticker-item:hover{background:var(--accent-soft);}
+.ti-sym{font-size:11px;font-weight:700;color:var(--text);}
+.ti-name{font-size:10px;color:var(--text-3);}
+.ti-price{font-family:ui-monospace,monospace;font-size:11px;color:var(--text-2);}
+.ti-chg{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;}
+.ti-score{font-size:9px;font-weight:700;color:var(--accent);}
+.ticker-sep{color:var(--border-md);padding:0 4px;font-size:10px;}
+
+/* ─── LEFT SIDEBAR ─── */
+.stocks-body{display:flex;flex:1;overflow:hidden;}
+.left-sidebar{
+  width:var(--sb-w);flex-shrink:0;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);
+  overflow:hidden;transition:transform .3s ease;z-index:300;
+}
+.sb-hdr{
+  display:flex;align-items:center;padding:10px 12px 6px;
+  border-bottom:1px solid var(--border);flex-shrink:0;gap:6px;
+}
+.sb-title{font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.6px;text-transform:uppercase;flex:1;}
+.sb-add-btn{
+  width:22px;height:22px;border-radius:6px;border:none;background:var(--accent-soft);
+  color:var(--accent);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;line-height:1;
+}
+.sb-add-btn:hover{background:var(--accent);color:#fff;}
+.sb-filter{
+  display:flex;gap:3px;padding:6px 8px;border-bottom:1px solid var(--border);
+  flex-shrink:0;flex-wrap:wrap;
+}
+.sf-btn{
+  padding:3px 8px;border:none;border-radius:20px;background:transparent;
+  color:var(--text-3);font-size:9px;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:all .14s;letter-spacing:.2px;
+}
+.sf-btn:hover{color:var(--text-2);background:var(--surface-3);}
+.sf-btn.active{background:var(--accent-soft);color:var(--accent);}
+.sb-list{flex:1;overflow-y:auto;padding:4px 0;}
+.sb-list::-webkit-scrollbar{width:3px;}
+.sb-list::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:3px;}
+.sb-item{
+  display:flex;align-items:center;gap:8px;padding:7px 10px 7px 8px;
+  cursor:pointer;transition:background .14s;position:relative;border-left:3px solid transparent;
+}
+.sb-item:hover{background:var(--surface-2);}
+.sb-item.active{background:var(--accent-soft);border-left-color:var(--accent);}
+.sb-bar-wrap{width:3px;height:32px;border-radius:2px;background:var(--surface-3);flex-shrink:0;position:relative;overflow:hidden;}
+.sb-bar-fill{position:absolute;bottom:0;width:100%;border-radius:2px;transition:height .4s ease;}
+.sb-info{flex:1;min-width:0;}
+.sb-sym{font-size:12px;font-weight:700;color:var(--text);line-height:1.2;}
+.sb-name{font-size:9px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-price-col{text-align:right;flex-shrink:0;}
+.sb-p{font-family:ui-monospace,monospace;font-size:11px;font-weight:600;color:var(--text);}
+.sb-chg{font-family:ui-monospace,monospace;font-size:9px;font-weight:700;}
+.sb-rm{
+  width:16px;height:16px;border:none;background:transparent;color:var(--text-3);
+  font-size:9px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .12s;padding:0;
+}
+.sb-rm:hover{background:var(--up-soft);color:var(--up);}
+
+/* ─── DRAWER OVERLAY ─── */
+.drawer-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);
+  z-index:290;backdrop-filter:blur(2px);
+}
+.drawer-overlay.open{display:block;}
+
+/* ─── MOBILE BOTTOM BAR ─── */
+.mobile-bottom-bar{
+  display:none;position:fixed;bottom:0;left:0;right:0;height:56px;
+  background:rgba(253,250,245,.96);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);z-index:500;
+  display:none;align-items:stretch;
+}
+.mbb-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:none;background:transparent;color:var(--text-3);font-size:9px;font-weight:700;
+  font-family:inherit;cursor:pointer;gap:3px;letter-spacing:.3px;transition:color .14s;
+}
+.mbb-btn .mbb-icon{font-size:18px;line-height:1;}
+.mbb-btn:hover,.mbb-btn.active{color:var(--accent);}
+.mbb-btn.active .mbb-icon{filter:none;}
+
+/* ─── RIGHT PANEL EXPAND (AI tab) ─── */
+.right-panel{width:260px;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;background:var(--bg);transition:width .3s ease;}
+.right-panel.expanded{width:380px;}
+
+/* ─── AI BODY (better readability) ─── */
+.ai-body{padding:11px 12px;font-size:11.5px;color:var(--text-2);line-height:1.9;min-height:80px;white-space:pre-wrap;}
+
+/* ─── SCORE / SIG card accent fixes ─── */
+.sig-card.active-sig{border-left-color:var(--accent);background:var(--accent-soft);}
+.itab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.ptab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.chip.active{border-color:var(--accent);background:var(--accent-soft);}
+.chip.active .sym{color:var(--accent);}
+.add-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.btn-ok{background:var(--accent);}
+.btn-ok:hover{background:color-mix(in srgb,var(--accent) 85%,#000);}
+.ai-btn{background:var(--accent);box-shadow:0 2px 8px rgba(155,94,37,0.3);}
+.ai-btn:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 85%,#000);box-shadow:0 4px 14px rgba(155,94,37,.35);}
+.set-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.slider::-webkit-slider-thumb{background:var(--accent);}
+.toggle.on{background:var(--accent);}
+.modal input:focus,.modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+#cfg-apply{background:var(--accent)!important;}
+.score-ring circle#score-arc{/* color set by JS */}
 
 /* ─── RESPONSIVE ─── */
-@media (max-width:900px){.right-panel{width:220px;}}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+@media (max-width:900px){
+  .right-panel{width:220px;}
+  .right-panel.expanded{width:280px;}
+  .left-sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    transform:translateX(-100%);box-shadow:var(--sh-lg);
+  }
+  .left-sidebar.open{transform:translateX(0);}
+  .mobile-bottom-bar{display:flex;}
+  body{padding-bottom:56px;}
+  .nav-tabs{display:none;}
+}
 @media (max-width:700px){
   .right-panel{display:none;}
   .chart-hdr{flex-wrap:wrap;}
   .chart-ctrl{width:100%;}
 }
 @media (max-width:480px){
-  .nav-tabs .nav-tab:not(.active){display:none;}
   .logo-sub{display:none;}
 }
 </style>
@@ -400,6 +559,7 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
     <button class="nav-tab" data-view="index">市場總覽</button>
   </div>
   <div class="nav-r">
+    <div class="tip-wrap" id="sb-toggle-wrap" style="display:none"><button class="ibtn" id="btn-sb-toggle"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><span class="tip">自選清單</span></div>
     <div class="live-badge"><div class="live-dot"></div>LIVE</div>
     <div class="tip-wrap"><button class="ibtn" id="btn-ref"><svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button><span class="tip">刷新資料</span></div>
     <div class="tip-wrap"><button class="ibtn" id="btn-add-nav"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span class="tip">新增股票</span></div>
@@ -410,20 +570,47 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
 </nav>
 
 <!-- STOCKS VIEW -->
-<div class="view active" id="view-stocks">
-  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
-    <div class="stock-bar" id="stock-bar">
-      <button class="add-chip" id="add-chip-btn">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        新增
-      </button>
+<div class="view active" id="view-stocks" style="flex-direction:column;">
+
+  <!-- TICKER MARQUEE -->
+  <div class="ticker-strip" id="ticker-strip">
+    <div class="ticker-label">強訊號</div>
+    <div class="ticker-viewport">
+      <div class="ticker-track" id="ticker-track">
+        <span class="ticker-item" style="color:var(--text-3);font-size:10px;padding:0 16px;">載入中…</span>
+      </div>
     </div>
+  </div>
+
+  <!-- STOCKS BODY: sidebar + main -->
+  <div class="stocks-body">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="left-sidebar" id="left-sidebar">
+      <div class="sb-hdr">
+        <span class="sb-title">自選清單</span>
+        <button class="sb-add-btn" id="sb-add-btn" title="新增股票">＋</button>
+      </div>
+      <div class="sb-filter" id="sb-filter">
+        <button class="sf-btn active" data-filter="all">全部</button>
+        <button class="sf-btn" data-filter="squeeze">壓縮</button>
+        <button class="sf-btn" data-filter="breakout">突破</button>
+        <button class="sf-btn" data-filter="oversold">超賣</button>
+      </div>
+      <div class="sb-list" id="sb-list"></div>
+    </div>
+
+    <!-- MAIN AREA (chart + right panel) -->
+    <div class="main-area">
     <div class="main-content">
       <!-- CHART AREA -->
       <div class="chart-area">
         <div class="chart-hdr">
           <div class="price-block">
-            <span class="p-sym" id="p-sym">— —</span>
+            <div style="display:flex;align-items:baseline;gap:6px;">
+              <span class="p-sym" id="p-sym">— —</span>
+              <span class="p-name" id="p-name" style="font-size:10px;color:var(--text-3);"></span>
+            </div>
             <span class="p-main" id="p-main">—</span>
           </div>
           <span class="p-pill" id="p-chg"></span>
@@ -472,7 +659,7 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
       </div>
 
       <!-- RIGHT PANEL -->
-      <div class="right-panel">
+      <div class="right-panel" id="right-panel">
         <div class="panel-tabs">
           <button class="ptab active" data-panel="signals">BB 信號</button>
           <button class="ptab" data-panel="analysis">AI 分析</button>
@@ -624,6 +811,14 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
           </div>
           <div class="settings-section">
             <div class="set-label">色調主題</div>
+            <div class="set-row"><span class="set-key">老錢主題色</span>
+              <select class="set-input" id="cfg-accent" style="width:auto;font-family:inherit;">
+                <option value="">暖銅（預設）</option>
+                <option value="forest">森林綠</option>
+                <option value="navy">深藍金</option>
+                <option value="burg">勃艮第</option>
+              </select>
+            </div>
             <div class="set-row"><span class="set-key">台股漲跌色</span>
               <select class="set-input" id="cfg-twcolor" style="width:auto;font-family:inherit;">
                 <option value="tw">台股（紅漲綠跌）</option>
@@ -635,7 +830,8 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
         </div>
       </div>
     </div>
-  </div>
+    </div><!-- /.main-area -->
+    </div><!-- /.stocks-body -->
 </div>
 
 <!-- INDEX VIEW -->
@@ -658,6 +854,22 @@ html,body{height:100%;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;b
     <div class="sec-hdr"><span class="sec-t">熱門 ETF</span><div class="sec-line"></div></div>
     <div class="etf-grid" id="etf-grid"></div>
   </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+
+<!-- MOBILE BOTTOM BAR -->
+<div class="mobile-bottom-bar" id="mobile-bottom-bar">
+  <button class="mbb-btn active" data-view="stocks" id="mbb-stocks">
+    <span class="mbb-icon">📊</span>個股分析
+  </button>
+  <button class="mbb-btn" data-view="index" id="mbb-index">
+    <span class="mbb-icon">🌐</span>市場總覽
+  </button>
+  <button class="mbb-btn" id="mbb-watchlist">
+    <span class="mbb-icon">⭐</span>自選
+  </button>
 </div>
 
 <!-- MODALS -->
@@ -707,7 +919,22 @@ const CFG = {
 const ST = {
   stocks: JSON.parse(localStorage.getItem('bl_stocks') || '["2330","2317","00940","AAPL","NVDA"]'),
   active: null, ivl:'1d', activeInd:'bb-pctb', chartData:null, activePanel:'signals',
+  priceInfo: {},   // {sym: {price,chg,pct,up,score,isSqueeze,hasBreakout,isOversold}}
+  nameMap: {},     // {sym: chineseName}
+  sidebarFilter: 'all',
 };
+const NAME_MAP_DEFAULT = {
+  '2330':'台積電','2317':'鴻海','2454':'聯發科','2382':'廣達','2303':'聯電',
+  '2881':'富邦金','2882':'國泰金','2886':'兆豐金','2884':'玉山金','2891':'中信金',
+  '2892':'第一金','2895':'高雄銀','2912':'統一超','2327':'國巨','3711':'日月光投控',
+  '0050':'元大台灣50','00878':'國泰永續高息','00940':'統一台動',
+  '006208':'富邦台50','00881':'國泰台5G','00692':'富邦公司治理',
+  'AAPL':'Apple','NVDA':'NVIDIA','TSLA':'Tesla','AMZN':'Amazon',
+  'MSFT':'Microsoft','GOOGL':'Alphabet','META':'Meta','AMD':'AMD',
+  'SPY':'S&P ETF','QQQ':'Nasdaq ETF','GLD':'黃金ETF',
+  '^TWII':'加權指數','^GSPC':'S&P 500','^IXIC':'NASDAQ','^DJI':'道瓊',
+};
+Object.assign(ST.nameMap, NAME_MAP_DEFAULT);
 let mC=null,vC=null,iC=null;
 let cS=null,bbU=null,bbM=null,bbL=null,bbFill=null,vS=null;
 let indSeries=[];
@@ -724,7 +951,7 @@ function saveCFG(){
   localStorage.setItem('bl_showbb',CFG.showBB);localStorage.setItem('bl_fill',CFG.showFill);
   localStorage.setItem('bl_auto',CFG.autoRef);localStorage.setItem('bl_twclr',CFG.twColor);
 }
-function toYahoo(s){s=s.trim().toUpperCase();if(/^\d{4,5}$/.test(s))return s.length===4?s+'.TW':s+'.TWO';return s;}
+function toYahoo(s){s=s.trim().toUpperCase();if(/^\d{4,6}$/.test(s))return s+'.TW';return s;}
 function disp(s){return s.replace(/\.(TW|TWO)$/,'');}
 function getProxy(){return localStorage.getItem('bl_proxy')||'';}
 function getKey(){return localStorage.getItem('bl_apikey')||'';}
@@ -748,6 +975,9 @@ async function loadSD(raw,ivl='1d'){
     time:ivl==='15m'?t:Math.floor(t),
     open:q.open[i],high:q.high[i],low:q.low[i],close:q.close[i],volume:q.volume[i]
   })).filter(c=>c.open&&c.close);
+  // Cache name from Yahoo meta
+  const dispSym=raw.replace(/\.(TW|TWO)$/,'');
+  if(!ST.nameMap[dispSym]){const n=res.meta?.longName||res.meta?.shortName;if(n)ST.nameMap[dispSym]=n;}
   return{candles,meta:res.meta};
 }
 
@@ -1037,7 +1267,11 @@ function renderInd(candles,type){
 async function loadStock(raw){
   ST.active=raw;
   const dp=disp(raw);
-  $('p-sym').textContent=dp;$('p-main').textContent='…';$('p-chg').textContent='';
+  $('p-sym').textContent=dp;
+  const name=ST.nameMap[dp]||'';
+  const pnEl=$('p-name');if(pnEl)pnEl.textContent=name;
+  $('p-main').textContent='…';$('p-chg').textContent='';
+  renderSidebar(); // highlight active immediately
   try{
     const data=await loadSD(raw,ST.ivl);
     renderCharts(data);
@@ -1047,34 +1281,124 @@ async function loadStock(raw){
     const pill=$('p-chg');
     pill.textContent=`${up?'+':''}${fmt(chg)}  ${up?'+':''}${fmt(pct,2)}%`;
     pill.className='p-pill '+(up?'up up-bg':'dn dn-bg');
-    updateChipP(raw,price,pct,up);
+    // Update priceInfo
+    const sd=ST.chartData?.sigData;
+    ST.priceInfo[raw]={price,chg,pct,up,
+      score:sd?.score||0,isSqueeze:!!sd?.isSqueeze,
+      hasBreakout:!!(sd?.sigs.breakoutUp.active||sd?.sigs.breakoutDn.active),
+      isOversold:!!sd?.sigs.pctBLow?.active};
+    renderSidebar();renderTicker();
   }catch(e){toast('無法載入 '+dp+'：'+e.message,'err');$('p-main').textContent='—';}
 }
-function renderBar(){
-  const bar=$('stock-bar'),btn=$('add-chip-btn');
-  bar.querySelectorAll('.chip').forEach(c=>c.remove());
-  ST.stocks.forEach(s=>{
-    const d=document.createElement('div');
-    d.className='chip'+(s===ST.active?' active':'');
-    const k=s.replace(/\W/g,'_');
-    d.innerHTML=`<span class="sym">${disp(s)}</span><span class="cpx" id="cp-${k}">…</span><span class="cpc" id="cc-${k}"></span><span class="rm" data-rm="${s}">✕</span>`;
-    d.addEventListener('click',e=>{if(e.target.dataset.rm){rmStock(e.target.dataset.rm);return;}ST.active=s;renderBar();loadStock(s);});
-    bar.insertBefore(d,btn);
-  });
+function renderBar(){renderSidebar();} // legacy alias
+function updateChipP(){} // legacy no-op (replaced by priceInfo)
+function rmStock(s){
+  delete ST.priceInfo[s];
+  ST.stocks=ST.stocks.filter(x=>x!==s);saveStocks();
+  if(ST.active===s){ST.active=ST.stocks[0]||null;if(ST.active)loadStock(ST.active);}
+  renderSidebar();renderTicker();
 }
-function updateChipP(raw,price,pct,up){
-  const k=raw.replace(/\W/g,'_');
-  const pe=$('cp-'+k),ce=$('cc-'+k);
-  if(pe)pe.textContent=fmt(price,1);
-  if(ce){ce.textContent=(up?'+':'')+fmt(pct,1)+'%';ce.className='cpc '+(up?'up':'dn');}
-}
-function rmStock(s){ST.stocks=ST.stocks.filter(x=>x!==s);saveStocks();if(ST.active===s){ST.active=ST.stocks[0]||null;if(ST.active)loadStock(ST.active);}renderBar();}
 async function addStock(raw){
   raw=raw.trim().toUpperCase();if(!raw)return;
-  const dp=disp(raw);
+  const yfSym=toYahoo(raw);
+  const dp=disp(yfSym);
   if(ST.stocks.some(s=>disp(s)===dp)){toast('已在清單中','err');return;}
-  try{await loadSD(dp);ST.stocks.push(dp);saveStocks();renderBar();loadStock(dp);toast('已新增 '+dp,'ok');}
-  catch(e){toast('找不到代號 '+raw,'err');}
+  try{
+    await loadSD(yfSym);
+    ST.stocks.push(yfSym);saveStocks();
+    renderSidebar();renderTicker();
+    loadStock(yfSym);toast('已新增 '+dp,'ok');
+  }catch(e){toast('找不到代號 '+raw,'err');}
+}
+
+/* ═══ SIDEBAR ═══ */
+function sbBarColor(score){
+  if(score>=6)return'var(--dn)';
+  if(score>=4)return'var(--accent)';
+  if(score>=2)return'var(--warn)';
+  return'var(--surface-3)';
+}
+function renderSidebar(){
+  const list=$('sb-list');if(!list)return;
+  const filter=ST.sidebarFilter||'all';
+  let stocks=ST.stocks.filter(s=>{
+    if(filter==='all')return true;
+    const info=ST.priceInfo[s];if(!info)return filter==='all';
+    if(filter==='squeeze')return info.isSqueeze;
+    if(filter==='breakout')return info.hasBreakout;
+    if(filter==='oversold')return info.isOversold;
+    return true;
+  });
+  list.innerHTML=stocks.map(s=>{
+    const dp=disp(s);
+    const info=ST.priceInfo[s]||{};
+    const name=ST.nameMap[dp]||'';
+    const score=info.score||0;
+    const barH=Math.max(4,Math.round((score/8)*32));
+    const barCol=sbBarColor(score);
+    const isAct=s===ST.active||dp===ST.active;
+    const priceStr=info.price?fmt(info.price):'…';
+    const chgStr=info.pct!=null?`<div class="sb-chg ${info.up?'up':'dn'}">${info.up?'+':''}${fmt(info.pct,1)}%</div>`:'';
+    return`<div class="sb-item${isAct?' active':''}" data-sym="${s}">
+      <div class="sb-bar-wrap"><div class="sb-bar-fill" style="height:${barH}px;background:${barCol}"></div></div>
+      <div class="sb-info"><div class="sb-sym">${dp}</div>${name?`<div class="sb-name">${name}</div>`:''}</div>
+      <div class="sb-price-col"><div class="sb-p">${priceStr}</div>${chgStr}</div>
+      <button class="sb-rm" data-rm="${s}">✕</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.sb-item').forEach(el=>{
+    el.addEventListener('click',e=>{
+      const rm=e.target.closest('[data-rm]');
+      if(rm){rmStock(rm.dataset.rm);return;}
+      ST.active=el.dataset.sym;
+      renderSidebar();loadStock(el.dataset.sym);
+      closeSidebar();
+    });
+  });
+}
+
+/* ═══ TICKER ═══ */
+function renderTicker(){
+  const track=$('ticker-track');if(!track)return;
+  const eligible=ST.stocks.filter(s=>ST.priceInfo[s]);
+  const source=eligible.length?eligible:ST.stocks;
+  const items=source.map(s=>{
+    const dp=disp(s);const info=ST.priceInfo[s]||{};
+    const name=ST.nameMap[dp]||'';
+    const score=info.score||0;
+    const scoreCol=sbBarColor(score);
+    const priceStr=info.price?fmt(info.price):'—';
+    const chgStr=info.pct!=null?`<span class="ti-chg ${info.up?'up':'dn'}">${info.up?'+':''}${fmt(info.pct,2)}%</span>`:'';
+    return`<span class="ticker-item" onclick="tickerClick('${s}')">
+      <span class="ti-sym">${dp}</span>
+      ${name?`<span class="ti-name">${name}</span>`:''}
+      <span class="ti-price">${priceStr}</span>
+      ${chgStr}
+      ${score>=2?`<span class="ti-score" style="color:${scoreCol}">●${score}</span>`:''}
+    </span><span class="ticker-sep">◆</span>`;
+  }).join('');
+  if(!items){return;}
+  track.innerHTML=items+items; // duplicate for seamless loop
+  const dur=Math.max(20,source.length*6);
+  track.style.animationDuration=dur+'s';
+}
+function tickerClick(s){
+  ST.active=s;renderSidebar();loadStock(s);
+  // Switch to stocks view if needed
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-stocks').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.view==='stocks'));
+  document.querySelectorAll('.mbb-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view==='stocks'));
+}
+
+/* ═══ DRAWER (mobile sidebar) ═══ */
+function openSidebar(){
+  $('left-sidebar').classList.add('open');
+  $('drawer-overlay').classList.add('open');
+}
+function closeSidebar(){
+  $('left-sidebar').classList.remove('open');
+  $('drawer-overlay').classList.remove('open');
 }
 
 /* ═══ INDEX VIEW ═══ */
@@ -1113,31 +1437,50 @@ async function loadIdx(){
   });
 }
 function switchToStock(sym){
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelector('[data-view="stocks"]').classList.add('active');
-  $('view-stocks').classList.add('active');
-  const dp=disp(sym);
-  if(!ST.stocks.includes(dp)){ST.stocks.push(dp);saveStocks();}
-  renderBar();loadStock(dp);
+  const yfSym=toYahoo(sym);
+  const dp=disp(yfSym);
+  if(!ST.stocks.some(s=>disp(s)===dp)){ST.stocks.push(yfSym);saveStocks();}
+  switchView('stocks');
+  ST.active=yfSym;renderSidebar();loadStock(yfSym);
 }
 
 /* ═══ AI ANALYSIS ═══ */
 function localAnalysis(data){
-  const{sigs,score,entry,sl,tp,isSqueeze,bw,pctB}=data;
+  const{sigs,score,entry,sl,tp,isSqueeze,bw,pctB,upper,mid,lower,aux}=data;
   const on=Object.entries(sigs).filter(([,v])=>v.active).map(([k])=>({
-    squeeze:'布林壓縮蓄能',breakoutUp:'上軌突破',breakoutDn:'下軌跌破',
+    squeeze:'布林壓縮',breakoutUp:'上軌突破',breakoutDn:'下軌跌破',
     bounce:'下軌反彈',reject:'上軌拒絕',midCross:'中軌穿越',walkUp:'上軌行走',pctBLow:'%B超賣'
-  }[k]));
-  const lvl=score>=6?'強烈多頭共振':score>=4?'偏多格局':score>=2?'信號混合，中性':'信號不足，偏空觀望';
-  let t=`① 布林訊號（${score}/8，${lvl}）`;
-  if(on.length)t+=`\n   觸發：${on.join(' · ')}`;
-  if(isSqueeze)t+=`\n   ⚡ 布林壓縮警示：頻寬 ${fmt(bw,1)}% 處於低位，強勢突破即將發生。`;
-  t+=`\n② 操作建議：`;
-  if(score>=5)t+=`技術面多頭信號明確，可於 ${fmt(entry)} 附近介入，分批建倉。`;
-  else if(score>=3)t+=`布林通道出現偏多跡象，建議等待%B回升至0.5以上確認再進場。`;
-  else t+=`當前布林訊號不足或偏空，建議保持觀望。`;
-  t+=`\n③ 風險管理：止損 ${fmt(sl)}（-${fmt(((entry-sl)/entry)*100,1)}%），止盈 ${fmt(tp)}（+${fmt(((tp-entry)/entry)*100,1)}%），ATR法風報比 1:2。`;
+  }[k]||k));
+  const off=Object.entries(sigs).filter(([,v])=>!v.active).map(([k])=>({
+    squeeze:'壓縮',breakoutUp:'上突破',breakoutDn:'下跌破',
+    bounce:'下反彈',reject:'上拒絕',midCross:'中線穿越',walkUp:'上行走',pctBLow:'%B超賣'
+  }[k]||k));
+  const lvl=score>=6?'強烈多頭共振':score>=4?'偏多格局':score>=2?'中性觀察':'偏空觀望';
+  const pos=pctB!=null?(pctB>0.8?'上軌附近（超買區）':pctB>0.5?'上半部（偏多）':pctB>0.2?'中性區間':pctB>=0?'下軌附近（超賣區）':'跌破下軌'):'通道中';
+  const tpPct=fmt(((tp-entry)/entry)*100,1);
+  const slPct=fmt(((entry-sl)/entry)*100,1);
+  const auxOn=Object.entries(aux).filter(([,v])=>v.on).map(([k])=>({trend:'均線多排',macd:'MACD金叉',kd:'KD超賣回彈',rsi:'RSI超賣',vol:'量能放大'}[k]));
+  let t='';
+  t+=`【技術定位】\n`;
+  t+=`現價 ${fmt(entry)} 位於布林通道${pos}，%B=${pctB!=null?fmt(pctB,2):'—'}。`;
+  t+=`通道頻寬 ${bw?fmt(bw,1)+'%（'+(isSqueeze?'壓縮狀態，能量積聚中':'正常擴張')+'）':'—'}。\n`;
+  t+=`上軌 ${fmt(upper)} → 壓力位；中軌 ${fmt(mid)} → 趨勢分水嶺；下軌 ${fmt(lower)} → 支撐位。\n\n`;
+  t+=`【因果分析】\n`;
+  t+=`布林訊號 ${score}/8 → ${lvl}。`;
+  if(on.length)t+=`\n已觸發：${on.join('、')}`;
+  if(isSqueeze)t+=`\n⚡ 壓縮突破在即：頻寬 ${fmt(bw,1)}% 收縮至低位，代表市場分歧縮小、蓄勢待發。歷史上壓縮後往往出現一波強趨勢行情，方向待確認。`;
+  if(sigs.breakoutUp?.active)t+=`\n收盤穿越上軌表明買方力道主導，通常預示短線強勢延續。`;
+  if(sigs.pctBLow?.active)t+=`\n%B < 0.2 反映賣壓過度宣洩，空頭動能趨於衰竭，技術性反彈機率升高。`;
+  if(auxOn.length)t+=`\n輔助確認：${auxOn.join('、')}，多指標共振增加信號可信度。`;
+  t+=`\n\n【操作策略】\n`;
+  if(score>=5)t+=`多頭信號明確，可於 ${fmt(entry)} 附近分批進場，首批倉位 30-50%。`;
+  else if(score>=3)t+=`偏多跡象成形，建議等待 %B > 0.5 或放量突破中軌 ${fmt(mid)} 後入場。`;
+  else t+=`訊號尚未明確，建議觀望。待布林帶擴張方向確定後再行動。`;
+  t+=`\n進場：${fmt(entry)} | 止盈：${fmt(tp)}（+${tpPct}%）| 止損：${fmt(sl)}（-${slPct}%）| 風報比 ≈ 1:2（ATR法）`;
+  t+=`\n\n【關鍵風險】\n`;
+  t+=`① 若放量跌破下軌 ${fmt(lower)} 且 %B 持續負值，代表技術面惡化，止損優先。\n`;
+  t+=`② 壓縮突破若成交量不放大，可能為假突破，宜等第二根K棒確認。`;
+  t+=`\n\n── 本地技術分析（設定 API Key 可啟用 Claude 機構級深度分析）`;
   return t;
 }
 async function runAI(){
@@ -1155,19 +1498,35 @@ async function runAI(){
   }else{
     const sigLines=Object.entries(data.sigs).map(([k,v])=>`${v.active?'✅':'❌'} ${{squeeze:'布林壓縮',breakoutUp:'上軌突破',breakoutDn:'下軌跌破',bounce:'下軌反彈',reject:'上軌拒絕',midCross:'中軌穿越',walkUp:'上軌行走',pctBLow:'%B超賣'}[k]}（${v.val}）`).join('\n');
     const auxLines=Object.entries(data.aux).map(([k,v])=>`${v.on?'✅':'❌'} ${{trend:'均線多排',macd:'MACD',kd:'KD',rsi:'RSI',vol:'量能'}[k]}：${v.val}`).join('\n');
-    const prompt=`你是一位頂尖的機構量化分析師，專精布林通道策略。請用繁體中文、機構報告口吻、150字內，針對以下數據給出結論性分析：
+    const dp=disp(ST.active);
+    const name=ST.nameMap[dp]||dp;
+    const pos=data.pctB!=null?(data.pctB>0.8?'上軌附近（超買）':data.pctB>0.5?'上半部偏強':data.pctB>0.2?'通道中性區':data.pctB>=0?'下軌附近（超賣）':'跌破下軌'):'通道中';
+    const sqStatus=data.isSqueeze?`壓縮中（頻寬${fmt(data.bw,1)}%，歷史低位）`:`擴張中（頻寬${fmt(data.bw,1)}%）`;
+    const prompt=`你是摩根士丹利亞太區首席技術分析師，請用繁體中文撰寫一份專業技術分析報告（220-260字），強調因果邏輯與市場意義。
 
-股票：${disp(ST.active)}｜現價：${fmt(data.entry)}｜區間：${ST.ivl}
-布林參數：N=${CFG.period}，K=${CFG.mult}
-BB 信號（${data.score}/8）：
+## 分析對象
+股票：${dp}（${name}）｜現價：${fmt(data.entry)}｜K線：${ST.ivl}
+布林通道 N=${CFG.period} K=${CFG.mult}
+
+## 布林通道狀態
+上軌 ${fmt(data.upper)}｜中軌 ${fmt(data.mid)}｜下軌 ${fmt(data.lower)}
+%B = ${data.pctB!=null?fmt(data.pctB,2):'—'}（${pos}）
+頻寬：${sqStatus}
+
+## 已觸發訊號（${data.score}/8）
 ${sigLines}
-輔助指標：
-${auxLines}
-布林數值：上軌${fmt(data.upper)}｜中軌${fmt(data.mid)}｜下軌${fmt(data.lower)}
-%B=${data.pctB!=null?fmt(data.pctB,2):'—'}｜頻寬=${data.bw!=null?fmt(data.bw,1)+'%':'—'}
-進場：${fmt(data.entry)}｜止盈：${fmt(data.tp)}｜止損：${fmt(data.sl)}
 
-格式：① 核心判斷 ② 操作建議 ③ 關鍵風險`;
+## 輔助指標
+${auxLines}
+
+## 風險管理
+進場 ${fmt(data.entry)}｜止盈 ${fmt(data.tp)}（+${fmt(((data.tp-data.entry)/data.entry)*100,1)}%）｜止損 ${fmt(data.sl)}（-${fmt(((data.entry-data.sl)/data.entry)*100,1)}%）
+
+請依此結構回答（每段3-5句，勿使用 markdown 符號）：
+【技術定位】說明當前價格在布林通道的具體位置及其市場意義
+【因果分析】解釋各訊號背後的市場邏輯：什麼導致了什麼，訊號間如何相互印證
+【操作策略】具體進出場條件、倉位管理、關鍵觀察價位
+【風險情境】列出2個可能使判斷失效的具體情境及對應處置`;
     try{
       const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
       if(!r.ok)throw new Error(r.status);
@@ -1187,6 +1546,9 @@ function applyConfig(){
   CFG.clrMid=$('clr-mid').value;
   CFG.clrLower=$('clr-lower').value;
   CFG.twColor=$('cfg-twcolor').value;
+  const accent=$('cfg-accent')?.value||'';
+  document.documentElement.dataset.accent=accent;
+  localStorage.setItem('bl_accent',accent);
   saveCFG();
   if(ST.active){initCharts();if(ST.chartData)renderCharts(ST.chartData);}
   buildInd(ST.activeInd);
@@ -1196,6 +1558,7 @@ function initConfigUI(){
   $('cfg-period').value=CFG.period;$('cfg-mult').value=CFG.mult;$('cfg-sq').value=CFG.sqThresh;
   $('clr-upper').value=CFG.clrUpper;$('clr-mid').value=CFG.clrMid;$('clr-lower').value=CFG.clrLower;
   $('cfg-twcolor').value=CFG.twColor;
+  if($('cfg-accent'))$('cfg-accent').value=localStorage.getItem('bl_accent')||'';
   updateToggle('tog-bb',CFG.showBB);updateToggle('tog-fill',CFG.showFill);updateToggle('tog-auto',CFG.autoRef);
 }
 function updateToggle(id,on){const t=$(id);if(t){t.className='toggle'+(on?' on':'');}}
@@ -1225,12 +1588,38 @@ function setupAutoRefresh(){
 }
 
 /* ═══ EVENT WIRING ═══ */
-document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+function switchView(view){
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.toggle('active',x.dataset.view===view));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  t.classList.add('active');$('view-'+t.dataset.view).classList.add('active');
-  if(t.dataset.view==='index')loadIdx();
+  $('view-'+view)?.classList.add('active');
+  document.querySelectorAll('.mbb-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  if(view==='index')loadIdx();
+}
+document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>switchView(t.dataset.view)));
+// Mobile bottom bar
+document.querySelectorAll('.mbb-btn[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+$('mbb-watchlist')?.addEventListener('click',()=>{openSidebar();});
+// Sidebar filter
+document.querySelectorAll('.sf-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.sf-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');ST.sidebarFilter=b.dataset.filter;renderSidebar();
 }));
+// Sidebar add button
+$('sb-add-btn')?.addEventListener('click',openAdd);
+// Hamburger (mobile)
+$('btn-sb-toggle')?.addEventListener('click',()=>{
+  if($('left-sidebar').classList.contains('open'))closeSidebar();else openSidebar();
+});
+// Drawer overlay closes sidebar
+$('drawer-overlay')?.addEventListener('click',closeSidebar);
+// Show hamburger on small screens
+function checkMobile(){
+  const isMobile=window.innerWidth<=900;
+  const el=$('sb-toggle-wrap');if(el)el.style.display=isMobile?'':'none';
+}
+checkMobile();window.addEventListener('resize',checkMobile);
+// Right panel expand for AI tab
+
 document.querySelectorAll('.seg-btn').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');ST.ivl=b.dataset.ivl;if(ST.active)loadStock(ST.active);
@@ -1246,12 +1635,13 @@ document.querySelectorAll('.ptab').forEach(b=>b.addEventListener('click',()=>{
   ['signals','analysis','config'].forEach(id=>{
     const el=$('panel-'+id);if(el)el.style.display=id===p?'':'none';
   });
+  $('right-panel')?.classList.toggle('expanded',p==='analysis');
 }));
 $('btn-bb-toggle').addEventListener('click',()=>{CFG.showBB=!CFG.showBB;[bbU,bbM,bbL].forEach(s=>s?.applyOptions({visible:CFG.showBB}));$('btn-bb-toggle').classList.toggle('active',CFG.showBB);saveCFG();});
 $('btn-bb-toggle').classList.add('active');
 const openAdd=()=>{$('add-modal').classList.add('open');setTimeout(()=>$('add-inp').focus(),80);};
 const closeAdd=()=>{$('add-modal').classList.remove('open');$('add-inp').value='';};
-$('btn-add-nav').addEventListener('click',openAdd);$('add-chip-btn').addEventListener('click',openAdd);
+$('btn-add-nav')?.addEventListener('click',openAdd);
 $('add-cancel').addEventListener('click',closeAdd);
 $('add-ok').addEventListener('click',()=>{addStock($('add-inp').value);closeAdd();});
 $('add-inp').addEventListener('keydown',e=>{if(e.key==='Enter')$('add-ok').click();if(e.key==='Escape')closeAdd();});
@@ -1272,11 +1662,25 @@ $('ai-btn').addEventListener('click',runAI);
 
 /* ═══ INIT ═══ */
 function init(){
-  initCharts();initConfigUI();renderBar();
+  initCharts();initConfigUI();renderSidebar();renderTicker();
   const savedTheme=localStorage.getItem('bl_theme');
   if(savedTheme==='dark')applyTheme(true);
-  if(ST.stocks.length){ST.active=ST.stocks[0];loadStock(ST.active);renderBar();}
+  const savedAccent=localStorage.getItem('bl_accent');
+  if(savedAccent)document.documentElement.dataset.accent=savedAccent;
+  if(ST.stocks.length){ST.active=ST.stocks[0];loadStock(ST.active);}
   setupAutoRefresh();
+  // Background-load prices for all other stocks (for sidebar/ticker)
+  ST.stocks.slice(1).forEach(s=>{
+    setTimeout(()=>{
+      loadSD(toYahoo(s),'1d').then(data=>{
+        const m=data.meta,p=m.regularMarketPrice,prev=m.previousClose||m.chartPreviousClose;
+        if(!p)return;
+        const chg=p-prev,pct=(chg/prev)*100,up=chg>=0;
+        ST.priceInfo[s]={price:p,chg,pct,up,score:0,isSqueeze:false,hasBreakout:false,isOversold:false};
+        renderSidebar();renderTicker();
+      }).catch(()=>{});
+    },Math.random()*3000+500);
+  });
 }
 if(typeof LightweightCharts!=='undefined')init();else window.addEventListener('load',init);
 </script>
