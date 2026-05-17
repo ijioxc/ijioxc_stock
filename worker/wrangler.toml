@@ -1,0 +1,7 @@
+name = "bandlab-proxy"
+main = "index.js"
+compatibility_date = "2024-12-01"
+
+# FUGLE_API_KEY is set via:
+#   npx wrangler secret put FUGLE_API_KEY
+# or Cloudflare Dashboard → Workers → Settings → Variables
